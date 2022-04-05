@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: go-ecommerce
+        restart: always
+        ports:
+            - 8000:8000
+        environment:
+            - APP_PORT=8000
+            - DB_HOST=database-1.cvdx6avmyegd.us-east-1.rds.amazonaws.com
+            - DB_PORT=3306
+            - DB_NAME=task_tracker
+            - DB_USERNAME=admin
+            - DB_PASSWORD=adminadmin
