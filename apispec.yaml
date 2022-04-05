@@ -1,0 +1,2143 @@
+openapi: '3.0.3'
+
+info:
+    title: Go E-Commerce
+    description: an API for simple E-Commerce application
+    version: v1.0
+    contact:
+        email: badar.wildanie@gmail.com
+        name: Badar Wildani
+
+tags:
+    - name: Auth
+      description: Authentication system
+    - name: User
+      description: Manage user data
+    - name: Product
+      description: Manage product data
+    - name: Category
+      description: Manage categories
+    - name: Cart
+      description: Manage categories
+
+components:
+    schemas:
+        auth-request:
+            type: object
+            properties:
+                username:
+                    type: string
+                    example: john
+                password:
+                    type: string
+                    example: john123
+        user-request:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: John
+                email:
+                    type: string
+                    example: john@mail.com
+                username:
+                    type: string
+                    example: john
+                password:
+                    type: string
+                    example: john123
+                gender:
+                    type: string
+                    example: male
+                address:
+                    type: string
+                    example: Groove st. Ave, Dallas
+                avatar:
+                    type: string
+                    example: https://source.unsplash.com/1200x400/?sea
+        user-response:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: John
+                email:
+                    type: string
+                    example: john@mail.com
+                username:
+                    type: string
+                    example: john
+                password:
+                    type: string
+                    example: john123
+                gender:
+                    type: string
+                    example: male
+                address:
+                    type: string
+                    example: Groove st. Ave, Dallas
+                avatar:
+                    type: string
+                    example: https://source.unsplash.com/1200x400/?sea
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+        product-request:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Product 1
+                price:
+                    type: integer
+                    example: 50000
+                description:
+                    type: string
+                    example: Some random product's description
+                image:
+                    type: string
+                    example: https://source.unsplash.com/1200x400/?sea
+                category_id:
+                    type: integer
+                    example: 11
+        product-response:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Product 1
+                price:
+                    type: integer
+                    example: 50000
+                description:
+                    type: string
+                    example: Some random product's description
+                image:
+                    type: string
+                    example: https://source.unsplash.com/1200x400/?sea
+                category_id:
+                    type: integer
+                    example: 11
+                category:
+                    $ref: '#/components/schemas/category-response'
+                user_id:
+                    type: integer
+                    example: 17
+                user:
+                    $ref: '#/components/schemas/user-response'
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+        category-request:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Some random category
+        category-response:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Some random category
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+        pagination:
+            type: object
+            properties:
+                page:
+                    type: integer
+                    example: 1
+                limit:
+                    type: integer
+                    example: 50
+                total_pages:
+                    type: integer
+                    example: 11
+        transaction-response:
+            type: object
+            properties:
+                address_street:
+                    type: string
+                    example: Melati st.
+                address_city:
+                    type: string
+                    example: Semarang
+                address_province:
+                    type: string
+                    example: Central Java
+                address_zip_code:
+                    type: integer
+                    example: 774283
+                payment_card:
+                    type: string
+                    example: Mastercard
+                payment_card_name:
+                    type: string
+                    example: Dennis
+                payment_card_number:
+                    type: string
+                    example: 778212379
+                payment_card_exp:
+                    type: string
+                    example: 03/24
+                total_qty:
+                    type: integer
+                    example: 24
+                total_price:
+                    type: integer
+                    example: 150000
+                status:
+                    type: string
+                    example: cart
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/cart-response'
+        cart-response:
+            type: object
+            properties:
+                product_id:
+                    type: integer
+                    example: 27
+                product:
+                    $ref: '#/components/schemas/product-cart-response'
+                product_price:
+                    type: integer
+                    example: 16000
+                transaction_id:
+                    type: integer
+                    example: 1
+                qty:
+                    type: integer
+                    example: 5
+                sub_total:
+                    type: string
+                    example: 40000
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+        product-cart-response:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Product 1
+                price:
+                    type: integer
+                    example: 50000
+                description:
+                    type: string
+                    example: Some random product's description
+                category_id:
+                    type: integer
+                    example: 11
+                category:
+                    $ref: '#/components/schemas/category-response'
+                user_id:
+                    type: integer
+                    example: 17
+                created_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+                updated_at:
+                    type: string
+                    example: 2012/07/28T10:02:37.000+0700
+        cart-request:
+            type: object
+            properties:
+                product_id:
+                    type: integer
+                    example: 27
+                qty:
+                    type: integer
+                    example: 5
+paths:
+    /api/auth:
+        post:
+            tags:
+                - 'Auth'
+            description: Log in the registered user into the system
+            summary: Login to the system
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/auth-request'
+            responses:
+                '200':
+                    description: success authenticating single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'OK'
+                                    code:
+                                        type: string
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+                                            me:
+                                                type: string
+                                                example: 'http://domain.com/api/auth/me'
+                                    data:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
+                                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                                            user:
+                                                $ref: '#/components/schemas/user-response'
+                '400':
+                    description: validation failed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'validation error'
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: username
+                                                error:
+                                                    type: string
+                                                    example: required
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot update database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+
+    /api/auth/me:
+        get:
+            tags:
+                - 'Auth'
+            description: Get currently authenticated userdata
+            summary: Get currently authenticated userdata *
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: success authenticating single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'OK'
+                                    code:
+                                        type: string
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth/me'
+                                    data:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
+                                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                                            user:
+                                                $ref: '#/components/schemas/user-response'
+                '400':
+                    description: token invalid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'invalid token'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+
+    # -----------------------------------------
+    #  User
+    # -----------------------------------------
+    /api/users:
+        get:
+            tags:
+                - 'User'
+            description: Getting list of user
+            summary: getting list of user
+            parameters:
+                - in: query
+                  name: q
+                  allowEmptyValue: true
+                  schema:
+                      type: string
+                      example: some name to search
+                - in: query
+                  name: username
+                  schema:
+                      type: string
+                      example: some username to search
+                - in: query
+                  name: gender
+                  schema:
+                      type: string
+                      example: a gender to filter
+                - in: query
+                  name: address
+                  schema:
+                      type: string
+                      example: a address to filter
+            responses:
+                '200':
+                    description: Success getting list of user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/users'
+                                            next:
+                                                type: string
+                                                example: 'http://example.com/api/users?p=2'
+                                            last:
+                                                type: string
+                                                example: 'http://example.com/api/users?p=10'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/user-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+
+        post:
+            tags:
+                - 'User'
+            description: Create single user
+            summary: Create single user *
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user-request'
+            responses:
+                '200':
+                    description: success creating single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/users/2'
+                '400':
+                    description: validation failed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'validation error'
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: username
+                                                error:
+                                                    type: string
+                                                    example: required
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+
+    /api/users/{id}:
+        get:
+            tags:
+                - 'User'
+            description: Get single user data
+            summary: Get single user data
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example:
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success get single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: string
+                                        example: 200
+                                    data:
+                                        $ref: '#/components/schemas/user-response'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/users/2'
+                '400':
+                    description: cannot get single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: string
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: cannot get user data with specified id
+        put:
+            tags:
+                - 'User'
+            description: Create single user
+            summary: Create single user *
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user-request'
+            responses:
+                '200':
+                    description: success creating single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/users/2'
+                '400':
+                    description: validation error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 422
+                                    error:
+                                        type: string
+                                        example: Field name must be filled
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: username
+                                                error:
+                                                    type: string
+                                                    example: username must be filled
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot create user record
+        delete:
+            tags:
+                - 'User'
+            description: Delete single user
+            summary: delete single user *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success deleting single user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                example: 1
+                '400':
+                    description: specified parameter doesn't match with any record
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: specified id doesn't match with any record
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot create user record
+
+    # -----------------------------------------
+    #  Product
+    # -----------------------------------------
+    /api/products:
+        get:
+            tags:
+                - 'Product'
+            description: Getting list of product
+            summary: getting list of product
+            parameters:
+                - in: query
+                  name: q
+                  allowEmptyValue: true
+                  schema:
+                      type: string
+                      example: some product title to search
+                - in: query
+                  name: sortPrice
+                  description: sort product based on product's price
+                  schema:
+                      type: integer
+                      example: 0
+            responses:
+                '200':
+                    description: Success getting list of product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                                            next:
+                                                type: string
+                                                example: 'http://example.com/api/products?p=2'
+                                            last:
+                                                type: string
+                                                example: 'http://example.com/api/products?p=10'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/product-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+    /api/products/{id}:
+        get:
+            tags:
+                - 'Product'
+            description: Get single product data
+            summary: Get single product data
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example:
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success get single product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: string
+                                        example: 200
+                                    data:
+                                        $ref: '#/components/schemas/product-response'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+                '400':
+                    description: cannot get single product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: string
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: cannot get product data with specified id
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+
+    /api/users/{id}/products:
+        get:
+            tags:
+                - 'Product'
+            description: Get user's product
+            summary: Get user's product *
+            parameters:
+                - in: path
+                  required: true
+                  name: id
+                  schema:
+                      type: string
+                      example: 7
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: Success getting list of user's product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                                            next:
+                                                type: string
+                                                example: 'http://example.com/api/products?p=2'
+                                            last:
+                                                type: string
+                                                example: 'http://example.com/api/products?p=10'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/product-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '401':
+                    description: Unauthorized user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'Unauthorized user'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+        post:
+            tags:
+                - 'Product'
+            description: Create single product
+            summary: Create single product *
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/product-request'
+            responses:
+                '200':
+                    description: success creating single product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                                    data:
+                                        $ref: '#/components/schemas/product-response'
+                '400':
+                    description: validation failed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'validation error'
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: title
+                                                error:
+                                                    type: string
+                                                    example: title field is required
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                '401':
+                    description: Unauthorized user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'Unauthorized user'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+
+    /api/users/{id}/products/{productId}:
+        put:
+            tags:
+                - 'Product'
+
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            description: Update single product
+            summary: Update single product *
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/product-request'
+            responses:
+                '200':
+                    description: success updating single product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+                                    data:
+                                        $ref: '#/components/schemas/product-response'
+                '400':
+                    description: validation error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 422
+                                    error:
+                                        type: string
+                                        example: Field name must be filled
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: product
+                                                error:
+                                                    type: string
+                                                    example: product must be filled
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot update product record
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products/2'
+        delete:
+            tags:
+                - 'Product'
+            description: Delete single product
+            summary: delete single product *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success deleting single product
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                example: 1
+                '400':
+                    description: specified parameter doesn't match with any record
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: specified id doesn't match with any record
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot delete product record
+
+    # -----------------------------------------
+    #  Category
+    # -----------------------------------------
+
+    /api/categories:
+        get:
+            tags:
+                - 'Category'
+            description: Getting list of category
+            summary: getting list of category
+            responses:
+                '200':
+                    description: Success getting list of category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/categories'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/category-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/categories'
+
+        post:
+            tags:
+                - 'Category'
+            description: Create single category
+            summary: Create single category *
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/category-request'
+            responses:
+                '200':
+                    description: success creating single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/categories/2'
+                                    data:
+                                        $ref: '#/components/schemas/category-response'
+                '400':
+                    description: validation failed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'validation error'
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: title
+                                                error:
+                                                    type: string
+                                                    example: title is required
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/auth'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/categories'
+    /api/categories/{id}:
+        get:
+            tags:
+                - 'Category'
+            description: Get single category data
+            summary: Get single category data
+
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example:
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success get single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: string
+                                        example: 200
+                                    data:
+                                        $ref: '#/components/schemas/category-response'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/categories/2'
+                '400':
+                    description: cannot get single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: string
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: cannot get category with specified id
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/categories/1'
+
+        put:
+            tags:
+                - 'Category'
+            description: Create single category
+            summary: Create single category *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/category-request'
+            responses:
+                '200':
+                    description: success updating single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/categories/2'
+                                    data:
+                                        $ref: '#/components/schemas/category-response'
+                '400':
+                    description: validation error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 422
+                                    error:
+                                        type: string
+                                        example: Field title must be filled
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: title
+                                                error:
+                                                    type: string
+                                                    example: title must be filled
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot update category
+        delete:
+            tags:
+                - 'Category'
+            description: Delete single category
+            summary: delete single category *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: success deleting single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                example: 1
+                '400':
+                    description: specified parameter doesn't match with any record
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: specified id doesn't match with any record
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot delete category
+
+    # -----------------------------------------
+    #  Cart
+    # -----------------------------------------
+
+    /api/cart:
+        get:
+            tags:
+                - 'Cart'
+            description: Getting list of cart items
+            summary: getting list of cart items *
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: Success getting list of cart
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/cart'
+                                            product:
+                                                type: string
+                                                example: 'http://example.com/api/products/'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/cart-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/cart'
+
+        post:
+            tags:
+                - 'Cart'
+            description: Create single cart item
+            summary: Create single cart item *
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/cart-request'
+            responses:
+                '200':
+                    description: success creating single category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 201
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/categories/2'
+                                            product:
+                                                type: string
+                                                example: 'http://example.com/api/product/2'
+                                    data:
+                                        $ref: '#/components/schemas/cart-response'
+                '400':
+                    description: validation failed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: 'validation error'
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: qty
+                                                error:
+                                                    type: string
+                                                    example: qty is required
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/cart'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/categories'
+    /api/cart/{id}:
+        put:
+            tags:
+                - 'Cart'
+            description: Update single Cart item
+            summary: Update single Cart item *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/cart-request'
+            responses:
+                '200':
+                    description: success updating single cart
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/cart/2'
+                                            product:
+                                                type: string
+                                                example: 'http://example.com/api/product/2'
+                                    data:
+                                        $ref: '#/components/schemas/cart-response'
+                '400':
+                    description: validation error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 422
+                                    error:
+                                        type: string
+                                        example: Field title must be filled
+                                    errors:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: qty
+                                                error:
+                                                    type: string
+                                                    example: qty must be filled
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot update cart
+        delete:
+            tags:
+                - 'Cart'
+            description: Delete single cart item
+            summary: delete single cart item *
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  example: 1
+                  schema:
+                      type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: success deleting single cart
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                example: 1
+                '400':
+                    description: specified parameter doesn't match with any record
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 400
+                                    error:
+                                        type: string
+                                        example: specified id doesn't match with any record
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot delete cart
+
+    /api/cart/checkout:
+        put:
+            tags:
+                - 'Cart'
+            description: Checkout all of the cart items
+            responses:
+                '200':
+                    description: checkout success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    code:
+                                        type: integer
+                                        example: 200
+                                    error:
+                                        type: string
+                                        example: null
+                                    data:
+                                        $ref: '#/components/schemas/transaction-response'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ERROR
+                                    code:
+                                        type: integer
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: cannot checkout cart, system error
