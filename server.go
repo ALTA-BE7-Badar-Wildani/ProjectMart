@@ -8,6 +8,7 @@ import (
 func main() {
 
 	config := config.Get()
-	utilities.NewGormConnection(config)
+	db := utilities.NewGormConnection(config)
+	utilities.Migrate(db)
 
 }
