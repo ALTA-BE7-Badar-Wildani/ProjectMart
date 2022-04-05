@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"go-ecommerce/config"
+	"go-ecommerce/utilities"
 )
 
 func main() {
 
 	config := config.Get()
-	fmt.Println(config)
+	utilities.NewGormConnection(config)
 
 }
