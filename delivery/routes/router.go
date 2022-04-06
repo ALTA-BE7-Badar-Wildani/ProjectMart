@@ -19,3 +19,11 @@ func RegisterAuthRoute(e *echo.Echo, authHandler handler.AuthHandler) {
 	e.POST("/api/auth", authHandler.Login)
 	e.GET("/api/auth/me", authHandler.Me, webMiddleware.JWTMiddleware())
 }
+
+func RegisterProductRoute(e *echo.Echo, productHandler handler.ProductHandler) {
+	e.GET("/api/products", productHandler.Index)
+	e.GET("/api/products/:id", productHandler.Show)
+	e.POST("/api/users/:id/products", productHandler.Create, webMiddleware.JWTMiddleware())
+	e.PUT("/api/users/:id/products/:productID", productHandler.Update, webMiddleware.JWTMiddleware())
+	e.DELETE("/api/users/:id/products/:productID", productHandler.Delete, webMiddleware.JWTMiddleware())
+}
