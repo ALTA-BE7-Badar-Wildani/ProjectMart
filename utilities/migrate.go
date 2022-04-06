@@ -11,5 +11,7 @@ func Migrate(db *gorm.DB) {
 		&entityDomain.User{},
 		&entityDomain.Category{},
 		&entityDomain.Product{},
+		&entityDomain.Transaction{},
+		&entityDomain.TransactionItem{},
 	)
 }
