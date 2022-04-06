@@ -4,9 +4,11 @@ import (
 	"go-ecommerce/config"
 	"go-ecommerce/delivery/handlers"
 	"go-ecommerce/delivery/routes"
+	categoryRepository "go-ecommerce/repositories/category"
 	productRepository "go-ecommerce/repositories/product"
 	userRepository "go-ecommerce/repositories/user"
 	authService "go-ecommerce/services/auth"
+	categoryService "go-ecommerce/services/category"
 	productService "go-ecommerce/services/product"
 	userService "go-ecommerce/services/user"
 	"go-ecommerce/utilities"
@@ -39,6 +41,12 @@ func main() {
 	productService := productService.NewProductService(productRepository, userRepository)
 	productHandler := handlers.NewProductHandler(productService)
 	routes.RegisterProductRoute(e, productHandler)
+
+	// Product App Provider
+	categoryRepository := categoryRepository.NewCategoryRepository(db)
+	categoryService := categoryService.NewCategoryService(categoryRepository)
+	serviceHandler := handlers.NewCategoryHandler(categoryService)
+	routes.RegisterCategoryRoute(e, serviceHandler)
 
 	e.Logger.Fatal(e.Start(":" + config.App.Port))
 }

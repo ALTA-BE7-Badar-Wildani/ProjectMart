@@ -1,36 +1,36 @@
-package product
+package category
 
 import (
 	"go-ecommerce/entities/domain"
 	web "go-ecommerce/entities/web"
-	productRepository "go-ecommerce/repositories/product"
+	categoryRepository "go-ecommerce/repositories/category"
 
 	"github.com/jinzhu/copier"
 )
 
-type ProductService struct {
-	productRepo productRepository.ProductRepositoryInterface
+type CategoryService struct {
+	categoryRepo categoryRepository.CategoryRepositoryInterface
 }
 
-func NewProductService(repository productRepository.ProductRepositoryInterface) *ProductService {
-	return &ProductService{
-		productRepo: repository,
+func NewCategoryService(repository categoryRepository.CategoryRepositoryInterface) *CategoryService {
+	return &CategoryService{
+		categoryRepo: repository,
 	}
 }
 
 /*
  * --------------------------
- * Get List of product 
+ * Get List of category 
  * --------------------------
  */
-func (service ProductService) FindAll(limit, page int, filters []map[string]string, sorts []map[string]interface{}) ([]web.ProductResponse, error) {
+func (service CategoryService) FindAll(limit, page int, filters []map[string]string, sorts []map[string]interface{}) ([]web.CategoryResponse, error) {
 
 	offset := (page - 1) * limit
 
-	productsRes := []web.ProductResponse{}
-	products, err := service.productRepo.FindAll(limit, offset, filters, sorts)
-	copier.Copy(&productsRes, &products)
-	return productsRes, err
+	categorysRes := []web.CategoryResponse{}
+	categorys, err := service.categoryRepo.FindAll(limit, offset, filters, sorts)
+	copier.Copy(&categorysRes, &categorys)
+	return categorysRes, err
 }
 
 /*
@@ -38,8 +38,8 @@ func (service ProductService) FindAll(limit, page int, filters []map[string]stri
  * Load pagination data 
  * --------------------------
  */
-func (service ProductService) GetPagination(page, limit int) (web.Pagination, error) {
-	totalRows, err := service.productRepo.CountAll()
+func (service CategoryService) GetPagination(page, limit int) (web.Pagination, error) {
+	totalRows, err := service.categoryRepo.CountAll()
 	if err != nil {
 		return web.Pagination{}, err
 	}
@@ -54,61 +54,68 @@ func (service ProductService) GetPagination(page, limit int) (web.Pagination, er
 
 /*
  * --------------------------
- * Get single product data based on ID
+ * Get single category data based on ID
  * --------------------------
  */
-func (service ProductService) Find(id int) (web.ProductResponse, error) {
+func (service CategoryService) Find(id int) (web.CategoryResponse, error) {
 	
-	product, err := service.productRepo.Find(id)
-	productRes  := web.ProductResponse{}
-	copier.Copy(&productRes, &product)
+	category, err := service.categoryRepo.Find(id)
+	categoryRes  := web.CategoryResponse{}
+	copier.Copy(&categoryRes, &category)
 
-	return productRes, err
+	return categoryRes, err
 }
 
 
 /*
  * --------------------------
- * Create product resource
+ * Create category resource
  * --------------------------
  */
-func (service ProductService) Create(productRequest web.ProductRequest) (web.ProductResponse, error) {
+func (service CategoryService) Create(categoryRequest web.CategoryRequest) (web.CategoryResponse, error) {
 	
-	product := domain.Product{}
-	copier.Copy(&product, &productRequest)
+	// convert request to domain entity
+	category := domain.Category{}
+	copier.Copy(&category, &categoryRequest)
 
-	product, err := service.productRepo.Store(product)
+	// Repository action
+	category, err := service.categoryRepo.Store(category)
 	if err != nil {
-		return web.ProductResponse{}, err
+		return web.CategoryResponse{}, err
 	}
 
-	productRes := web.ProductResponse{}
-	copier.Copy(&productRes, &product)
+	// process domain entity to response
+	categoryRes := web.CategoryResponse{}
+	copier.Copy(&categoryRes, &category)
 
-	return productRes, nil
+	return categoryRes, nil
 }
 
 
 /*
  * --------------------------
- * Update product resource
+ * Update category resource
  * --------------------------
  */
-func (service ProductService) Update(productRequest web.ProductRequest, id int) (web.ProductResponse, error) {
+func (service CategoryService) Update(categoryRequest web.CategoryRequest, id int) (web.CategoryResponse, error) {
 
-	// Find product
-	product, err := service.productRepo.Find(id)
+	// Find category
+	category, err := service.categoryRepo.Find(id)
 	if err != nil {
-		return web.ProductResponse{}, web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
+		return web.CategoryResponse{}, web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
 	}
 
-	product, err = service.productRepo.Update(product, id)
+	// Merge updated data request to domain entity
+	copier.CopyWithOption(&category, &categoryRequest, copier.Option{ IgnoreEmpty: true, DeepCopy: true })
 
-	// Convert product domain to product response
-	productRes := web.ProductResponse{}
-	copier.Copy(&productRes, &product)
+	// repository action
+	category, err = service.categoryRepo.Update(category, id)
 
-	return productRes, err
+	// Convert category domain to category response
+	categoryRes := web.CategoryResponse{}
+	copier.Copy(&categoryRes, &category)
+
+	return categoryRes, err
 }
 
 /*
@@ -116,14 +123,14 @@ func (service ProductService) Update(productRequest web.ProductRequest, id int) 
  * Delete resource data 
  * --------------------------
  */
-func (service ProductService) Delete(id int) error {
-	// Find product
-	_, err := service.productRepo.Find(id)
+func (service CategoryService) Delete(id int) error {
+	// Find category
+	_, err := service.categoryRepo.Find(id)
 	if err != nil {
 		return web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
 	}
 	
-	// Copy request to found product
-	err = service.productRepo.Delete(id)
+	// Copy request to found category
+	err = service.categoryRepo.Delete(id)
 	return err
 }

@@ -27,3 +27,11 @@ func RegisterProductRoute(e *echo.Echo, productHandler handler.ProductHandler) {
 	e.PUT("/api/users/:id/products/:productID", productHandler.Update, webMiddleware.JWTMiddleware())
 	e.DELETE("/api/users/:id/products/:productID", productHandler.Delete, webMiddleware.JWTMiddleware())
 }
+
+func RegisterCategoryRoute(e *echo.Echo, categoryHandler handler.CategoryHandler) {
+	e.GET("/api/categories", categoryHandler.Index)
+	e.GET("/api/categories/:id", categoryHandler.Show)
+	e.POST("/api/categories", categoryHandler.Create)
+	e.PUT("/api/categories/:id", categoryHandler.Update)
+	e.DELETE("/api/categories/:id", categoryHandler.Delete)
+}
