@@ -118,12 +118,29 @@ func (service ProductService) Create(productRequest web.ProductRequest, tokenReq
  * Update product resource
  * --------------------------
  */
-func (service ProductService) Update(productRequest web.ProductRequest, id int) (web.ProductResponse, error) {
+func (service ProductService) Update(productRequest web.ProductRequest, id int, tokenReq interface{}) (web.ProductResponse, error) {
 
 	// Find product
 	product, err := service.productRepo.Find(id)
 	if err != nil {
 		return web.ProductResponse{}, web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
+	}
+
+	// Translate token
+	token := tokenReq.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userIDReflect := reflect.ValueOf(claims).MapIndex(reflect.ValueOf("userID"))
+	if reflect.ValueOf(userIDReflect.Interface()).Kind().String() != "float64" {
+		return web.ProductResponse{}, web.WebError{ Code: 400, Message: "Invalid token, no userdata present" }
+	}
+
+	// get user data
+	user, err := service.userRepo.Find(int(claims["userID"].(float64)))
+	if err != nil {
+		return web.ProductResponse{}, web.WebError{ Code: 400, Message: "No user matched with this authenticated user"}
+	}
+	if product.UserID != user.ID {
+		return web.ProductResponse{}, web.WebError{ Code: 401, Message: "Cannot update product that belongs to someone else" }
 	}
 
 	// Copy request to found product
@@ -149,11 +166,28 @@ func (service ProductService) Update(productRequest web.ProductRequest, id int) 
  * Delete resource data 
  * --------------------------
  */
-func (service ProductService) Delete(id int) error {
+func (service ProductService) Delete(id int, tokenReq interface{}) error {
 	// Find product
-	_, err := service.productRepo.Find(id)
+	product, err := service.productRepo.Find(id)
 	if err != nil {
 		return web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
+	}
+
+	// Translate token
+	token := tokenReq.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userIDReflect := reflect.ValueOf(claims).MapIndex(reflect.ValueOf("userID"))
+	if reflect.ValueOf(userIDReflect.Interface()).Kind().String() != "float64" {
+		return web.WebError{ Code: 400, Message: "Invalid token, no userdata present" }
+	}
+
+	// get user data
+	user, err := service.userRepo.Find(int(claims["userID"].(float64)))
+	if err != nil {
+		return web.WebError{ Code: 400, Message: "No user matched with this authenticated user"}
+	}
+	if product.UserID != user.ID {
+		return web.WebError{ Code: 401, Message: "Cannot update product that belongs to someone else" }
 	}
 	
 	// Repository action

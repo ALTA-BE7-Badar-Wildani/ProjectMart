@@ -181,7 +181,10 @@ func (handler ProductHandler) Update(c echo.Context) error {
 		return c.JSON(400, helpers.MakeErrorResponse("ERROR", 400, err.Error(), links))
 	}
 
-	productRes, err := handler.productService.Update(productReq, id)
+	token := c.Get("user")
+
+	// Product service call
+	productRes, err := handler.productService.Update(productReq, id, token)
 	if err != nil {
 		if reflect.TypeOf(err).String() == "web.WebError" {
 			webErr := err.(web.WebError)
@@ -214,8 +217,10 @@ func (handler ProductHandler) Delete(c echo.Context) error {
 		return c.JSON(400, helpers.MakeErrorResponse("ERROR", 400, err.Error(), links))
 	}
 
-	// call delete service
-	err = handler.productService.Delete(id)
+	token := c.Get("user")
+
+	// call delete on product service
+	err = handler.productService.Delete(id, token)
 	if err != nil {
 		if reflect.TypeOf(err).String() == "web.WebError" {
 			webErr := err.(web.WebError)
