@@ -46,7 +46,14 @@ func (repo UserRepository) CountAll() (int64, error) {
 }
 
 func (repo UserRepository) Find(id int) (entityDomain.User, error) {
-	panic("Implement me")
+	user := entityDomain.User{}
+	tx := repo.db.Find(&user, id)
+	if tx.Error != nil {
+		return entityDomain.User{}, web.WebError{Code: 500, Message: "server error"}
+	} else if tx.RowsAffected <= 0 {
+		return entityDomain.User{}, web.WebError{Code: 400, Message: "cannot get user data with specified id"}
+	}
+	return user, nil
 }
 
 func (repo UserRepository) FindBy(field string, value string) (entityDomain.User, error) {
@@ -54,13 +61,26 @@ func (repo UserRepository) FindBy(field string, value string) (entityDomain.User
 }
 
 func (repo UserRepository) Store(user entityDomain.User) (entityDomain.User, error) {
-	panic("Implement me")
+	
+	tx := repo.db.Create(&user)
+	if tx.Error != nil {
+		return entityDomain.User{}, web.WebError{Code: 500, Message: tx.Error.Error()}
+	}
+	return user, nil
 }
 
 func (repo UserRepository) Update(user entityDomain.User, id int) (entityDomain.User, error) {
-	panic("Implement me")
+	tx := repo.db.Save(&user)
+	if tx.Error != nil {
+		return entityDomain.User{}, web.WebError{Code: 500, Message: tx.Error.Error()}
+	}
+	return user, nil
 }
 
 func (repo UserRepository) Delete(id int) error {
-	panic("Implement me")
+	tx := repo.db.Delete(&entityDomain.User{}, id)
+	if tx.Error != nil {
+		return web.WebError{Code: 500, Message: tx.Error.Error()}
+	}
+	return nil
 }
