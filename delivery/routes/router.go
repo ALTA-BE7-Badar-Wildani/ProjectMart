@@ -2,6 +2,7 @@ package routes
 
 import (
 	handler "go-ecommerce/delivery/handlers"
+	webMiddleware "go-ecommerce/delivery/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,4 +17,5 @@ func RegisterUserRoute(e *echo.Echo, userHandler handler.UserHandler) {
 
 func RegisterAuthRoute(e *echo.Echo, authHandler handler.AuthHandler) {
 	e.POST("/api/auth", authHandler.Login)
+	e.GET("/api/auth/me", authHandler.Me, webMiddleware.JWTMiddleware())
 }
