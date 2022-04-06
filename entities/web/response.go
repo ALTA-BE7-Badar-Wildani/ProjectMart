@@ -1,12 +1,20 @@
 package web
 
-type SuccessResponse struct {
+type SuccessListResponse struct {
 	Status string `json:"status"`
 	Code int `json:"code"`
 	Error interface{} `json:"error"`
 	Links interface{} `json:"link"`
 	Data interface{} `json:"data"`
 	Pagination Pagination `json:"pagination"`
+}
+
+type SuccessResponse struct {
+	Status string `json:"status"`
+	Code int `json:"code"`
+	Error interface{} `json:"error"`
+	Links interface{} `json:"link"`
+	Data interface{} `json:"data"`
 }
 
 type ErrorResponse struct {
