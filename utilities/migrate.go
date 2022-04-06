@@ -1,7 +1,13 @@
 package utilities
 
-import "gorm.io/gorm"
+import (
+	entityDomain "go-ecommerce/entities/domain"
+
+	"gorm.io/gorm"
+)
 
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(
+		&entityDomain.User{},
+	)
 }
