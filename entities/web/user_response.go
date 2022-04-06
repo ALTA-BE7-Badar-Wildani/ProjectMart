@@ -12,7 +12,7 @@ package web
 import "time"
 
 type UserResponse struct {
-	Id string `json:"id"`
+	ID int `json:"id"`
 	Name string `json:"name"`
 	Email string `json:"email"`
 	Username string `json:"username"`
