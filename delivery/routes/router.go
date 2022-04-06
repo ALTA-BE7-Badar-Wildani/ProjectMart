@@ -13,3 +13,7 @@ func RegisterUserRoute(e *echo.Echo, userHandler handler.UserHandler) {
 	e.PUT("/api/users/:id", userHandler.Update)
 	e.DELETE("/api/users/:id", userHandler.Delete)
 }
+
+func RegisterAuthRoute(e *echo.Echo, authHandler handler.AuthHandler) {
+	e.POST("/api/auth", authHandler.Login)
+}

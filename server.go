@@ -5,6 +5,7 @@ import (
 	"go-ecommerce/delivery/handlers"
 	"go-ecommerce/delivery/routes"
 	userRepository "go-ecommerce/repositories/user"
+	authService "go-ecommerce/services/auth"
 	userService "go-ecommerce/services/user"
 	"go-ecommerce/utilities"
 
@@ -23,8 +24,11 @@ func main() {
 	userRepository := userRepository.NewUserRepository(db)
 	userService := userService.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
-	
 	routes.RegisterUserRoute(e, userHandler)
+
+	authService := authService.NewAuthService(userRepository)
+	authHandler := handlers.NewAuthHandler(authService)
+	routes.RegisterAuthRoute(e, authHandler)
 
 	e.Logger.Fatal(e.Start(":" + config.App.Port))
 }
