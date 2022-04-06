@@ -6,6 +6,7 @@ import (
 	userRepository "go-ecommerce/repositories/user"
 
 	"github.com/jinzhu/copier"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -52,11 +53,17 @@ func (service UserService) Find(id int) (web.UserResponse, error) {
 
 
 func (service UserService) Create(userRequest web.UserRequest) (web.UserResponse, error) {
-
+	
 	user := domain.User{}
 	copier.Copy(&user, &userRequest)
 
-	user, err := service.userRepo.Store(user)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return web.UserResponse{}, web.WebError{ Code: 500, Message: "server error: hashing failed" }
+	}
+	user.Password = string(hashedPassword)
+
+	user, err = service.userRepo.Store(user)
 
 	userRes := web.UserResponse{}
 	copier.Copy(&userRes, &user)
@@ -72,9 +79,21 @@ func (service UserService) Update(userRequest web.UserRequest, id int) (web.User
 	if err != nil {
 		return web.UserResponse{}, web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
 	}
+	oldHashedPassword := user.Password
 	
 	// Copy request to found user
-	copier.Copy(&user, &userRequest)
+	copier.CopyWithOption(&user, &userRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
+	// Hash password if request not empty or else
+	if userRequest.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRequest.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return web.UserResponse{}, web.WebError{ Code: 500, Message: "server error: hashing failed" }
+		}
+		user.Password = string(hashedPassword)
+	} else {
+		user.Password = oldHashedPassword
+	}
 
 	user, err = service.userRepo.Update(user, id)
 
