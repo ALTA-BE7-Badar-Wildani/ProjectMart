@@ -101,11 +101,12 @@ func (handler CartHandler) Create(c echo.Context) error {
  */
 func (handler CartHandler) Update(c echo.Context) error {
 
-	// hateoas
-	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/cart/"}
+	
 
 	// Retrieve id param
 	id, err := strconv.Atoi(c.Param("id"))
+	// hateoas
+	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/cart/" + c.Param("id")}
 	if err != nil {
 		return c.JSON(400, helpers.MakeErrorResponse("ERROR", 400, "The provided parameter is invalid", links))
 	}
@@ -137,3 +138,79 @@ func (handler CartHandler) Update(c echo.Context) error {
 	})
 }
 
+/*
+ * -------------------------------------------
+ *  Delete from cart items
+ * -------------------------------------------
+ */
+func (handler CartHandler) Delete(c echo.Context) error {
+
+	// Retrieve id param
+	id, err := strconv.Atoi(c.Param("id"))
+	// hateoas
+	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/cart/" + c.Param("id")}
+	if err != nil {
+		return c.JSON(400, helpers.MakeErrorResponse("ERROR", 400, "The provided parameter is invalid", links))
+	}
+
+	// retrieve token
+	token := c.Get("user")
+
+	// service call
+	err = handler.cartService.Delete(id, token)
+	if err != nil {
+		if reflect.TypeOf(err).String() == "web.WebError" {
+			webErr := err.(web.WebError)
+			return c.JSON(webErr.Code, helpers.MakeErrorResponse("ERROR", webErr.Code, webErr.Error(), links))
+		}
+		return c.JSON(500, helpers.MakeErrorResponse("ERROR", 500, err.Error(), links))
+	}
+
+	// response
+	return c.JSON(200, web.SuccessResponse{
+		Status: "OK",
+		Code: 200,
+		Error: nil,
+		Links: links,
+		Data: id,
+	})
+}
+
+
+
+/*
+ * -------------------------------------------
+ * Checkout all cart items
+ * -------------------------------------------
+ */
+func (handler CartHandler) Checkout(c echo.Context) error {
+	
+	// hateoas
+	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/cart/checkout"}
+
+	// retrieve token
+	token := c.Get("user")
+
+	// Populate request
+	trReq := web.TransactionRequest{}
+	c.Bind(&trReq)
+
+	// service call
+	cartRes, err := handler.cartService.Checkout(trReq, token)
+	if err != nil {
+		if reflect.TypeOf(err).String() == "web.WebError" {
+			webErr := err.(web.WebError)
+			return c.JSON(webErr.Code, helpers.MakeErrorResponse("ERROR", webErr.Code, webErr.Error(), links))
+		}
+		return c.JSON(500, helpers.MakeErrorResponse("ERROR", 500, err.Error(), links))
+	}
+
+	// response
+	return c.JSON(200, web.SuccessResponse{
+		Status: "OK",
+		Code: 200,
+		Error: nil,
+		Links: links,
+		Data: cartRes,
+	})
+}

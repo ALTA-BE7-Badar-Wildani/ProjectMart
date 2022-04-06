@@ -39,7 +39,7 @@ func (repo TransactionRepository) FindFirst(filters []map[string]string) (entity
 
 func (repo TransactionRepository) Find(id int) (entityDomain.Transaction, error) {
 	transaction := entityDomain.Transaction{}
-	tx := repo.db.Preload("User").Preload("Category").Find(&transaction, id)
+	tx := repo.db.Preload("User").Find(&transaction, id)
 	if tx.Error != nil {
 		return entityDomain.Transaction{}, web.WebError{Code: 500, Message: "server error"}
 	} else if tx.RowsAffected <= 0 {
@@ -50,7 +50,7 @@ func (repo TransactionRepository) Find(id int) (entityDomain.Transaction, error)
 
 func (repo TransactionRepository) Store(transaction entityDomain.Transaction) (entityDomain.Transaction, error) {
 	
-	tx := repo.db.Preload("User").Preload("Category").Create(&transaction)
+	tx := repo.db.Preload("User").Create(&transaction)
 	if tx.Error != nil {
 		return entityDomain.Transaction{}, web.WebError{Code: 500, Message: tx.Error.Error()}
 	}

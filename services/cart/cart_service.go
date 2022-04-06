@@ -37,7 +37,7 @@ func NewCartService(
 
 /*
  * --------------------------
- * Get List of product 
+ * Get List items of cart 
  * --------------------------
  */
 func (service CartService) FindAll(tokenReq interface{}) ([]web.CartResponse, error) {
@@ -65,6 +65,11 @@ func (service CartService) FindAll(tokenReq interface{}) ([]web.CartResponse, er
 			"operator": "=",
 			"value": strconv.Itoa(int(user.ID)),
 		},
+		{
+			"field": "status",
+			"operator": "=",
+			"value": "CART",
+		},
 	}
 	tr, err := service.trRepo.FindFirst(filters)
 	if err != nil {
@@ -78,6 +83,44 @@ func (service CartService) FindAll(tokenReq interface{}) ([]web.CartResponse, er
 
 	// Get transaction items based on found transaction
 	filters = []map[string]string {
+		{
+			"field": "transaction_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(tr.ID)),
+		},
+	}
+	trItems, err := service.trItemRepo.FindAll(0, 0, filters, []map[string]interface{}{})
+	if err != nil {
+		return []web.CartResponse{}, err
+	}
+
+	// Process to cart response
+	cartsRes := []web.CartResponse{}
+	copier.Copy(&cartsRes, &trItems)
+	return cartsRes, err
+}
+
+
+/*
+ * --------------------------
+ * Get List items of cart by transaction ID 
+ * --------------------------
+ */
+func (service CartService) FindAllByTransactionID(trID int) ([]web.CartResponse, error) {
+
+	// get transaction data
+	tr, err := service.trRepo.Find(trID)
+	if err != nil {
+		webErr := err.(web.WebError)
+		if webErr.Code == 400 {
+			return []web.CartResponse{}, nil
+		}
+		return []web.CartResponse{}, err
+	}
+
+
+	// Get transaction items based on found transaction
+	filters := []map[string]string {
 		{
 			"field": "transaction_id",
 			"operator": "=",
@@ -122,6 +165,11 @@ func (service CartService) Create(cartReq web.CartRequest, tokenReq interface{})
 			"field": "user_id",
 			"operator": "=",
 			"value": strconv.Itoa(int(user.ID)),
+		},
+		{
+			"field": "status",
+			"operator": "=",
+			"value": "CART",
 		},
 	}
 	tr, err := service.trRepo.FindFirst(filters)
@@ -209,6 +257,11 @@ func (service CartService) Update(cartReq web.CartRequest, id int, tokenReq inte
 			"operator": "=",
 			"value": strconv.Itoa(int(user.ID)),
 		},
+		{
+			"field": "status",
+			"operator": "=",
+			"value": "CART",
+		},
 	}
 	tr, err := service.trRepo.FindFirst(filters)
 	if err != nil {
@@ -271,4 +324,133 @@ func (service CartService) Update(cartReq web.CartRequest, id int, tokenReq inte
 	copier.Copy(&cartRes, &trItem)
 
 	return cartRes, nil
+}
+
+
+
+/*
+ * --------------------------
+ *  Delete from cart
+ * --------------------------
+ */
+func (service CartService) Delete(id int, tokenReq interface{}) (error) {
+	// Translate token
+	token := tokenReq.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userIDReflect := reflect.ValueOf(claims).MapIndex(reflect.ValueOf("userID"))
+	if reflect.ValueOf(userIDReflect.Interface()).Kind().String() != "float64" {
+		return web.WebError{ Code: 400, Message: "Invalid token, no userdata present" }
+	}
+
+	// get user data
+	user, err := service.userRepo.Find(int(claims["userID"].(float64)))
+	if err != nil {
+		return web.WebError{ Code: 400, Message: "No user matched with this authenticated user"}
+	}
+
+	// Get last User transaction (cart) 
+	filters := []map[string]string {
+		{
+			"field": "user_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(user.ID)),
+		},
+		{
+			"field": "status",
+			"operator": "=",
+			"value": "CART",
+		},
+	}
+	tr, err := service.trRepo.FindFirst(filters)
+	if err != nil {
+		webErr := err.(web.WebError)
+		if webErr.Code != 400 {
+			return err
+		}
+		return web.WebError{ Code: 500, Message: "data error: orphan cart items" }
+	}
+
+	// get old transaction item
+	trItemOld, err := service.trItemRepo.Find(id)
+	if err != nil {
+		return web.WebError{ Code: 400, Message: "cart item not found" }
+	}
+	
+
+	// repository transaction item action
+	err = service.trItemRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	// Update transaction
+	tr.TotalQty = tr.TotalQty - trItemOld.Qty
+	tr.TotalPrice = tr.TotalPrice - trItemOld.SubTotal
+	tr, err = service.trRepo.Update(tr, int(tr.ID))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func (service CartService) Checkout(trReq web.TransactionRequest, tokenReq interface{}) (web.TransactionResponse, error) {
+	// Translate token
+	token := tokenReq.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userIDReflect := reflect.ValueOf(claims).MapIndex(reflect.ValueOf("userID"))
+	if reflect.ValueOf(userIDReflect.Interface()).Kind().String() != "float64" {
+		return web.TransactionResponse{}, web.WebError{ Code: 400, Message: "Invalid token, no userdata present" }
+	}
+
+	// get user data
+	user, err := service.userRepo.Find(int(claims["userID"].(float64)))
+	if err != nil {
+		return web.TransactionResponse{}, web.WebError{ Code: 400, Message: "No user matched with this authenticated user"}
+	}
+
+	// Get last User transaction (cart) 
+	filters := []map[string]string {
+		{
+			"field": "user_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(user.ID)),
+		},
+		{
+			"field": "status",
+			"operator": "=",
+			"value": "CART",
+		},
+	}
+	tr, err := service.trRepo.FindFirst(filters)
+	if err != nil {
+		webErr := err.(web.WebError)
+		if webErr.Code != 400 {
+			return web.TransactionResponse{}, err
+		}
+		return web.TransactionResponse{}, web.WebError{ Code: 500, Message: "data error: no current transaction" }
+	}
+	copier.Copy(&tr, &trReq)
+	tr.Status = "CHECKED OUT"
+
+
+	// Repository action
+	tr, err = service.trRepo.Update(tr, int(tr.ID))
+	if err != nil {
+		return web.TransactionResponse{}, err
+	}
+
+	// building transaction response
+	trRes := web.TransactionResponse{}
+	copier.Copy(&trRes, &tr)
+
+	trItems, err := service.FindAllByTransactionID(int(tr.ID))
+	if err != nil {
+		return web.TransactionResponse{}, web.WebError{ Code: 400, Message: "cannot get transaction items" }
+	}
+	trRes.Items = trItems
+
+
+	return trRes, nil
 }
