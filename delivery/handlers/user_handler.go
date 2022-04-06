@@ -74,7 +74,7 @@ func (handler UserHandler) Index(c echo.Context) error {
 	// Get all users
 	usersRes, err := handler.userService.FindAll(limit, page, filters, []map[string]interface{}{})
 	if err != nil {
-		if reflect.TypeOf(err).String() == "web.RepositoryError" {
+		if reflect.TypeOf(err).String() == "web.WebError" {
 			webErr := err.(web.WebError)
 			return c.JSON(webErr.Code, helpers.MakeErrorResponse("ERROR", webErr.Code, webErr.Error(), links))
 		}
