@@ -9,5 +9,7 @@ import (
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(
 		&entityDomain.User{},
+		&entityDomain.Category{},
+		&entityDomain.Product{},
 	)
 }
