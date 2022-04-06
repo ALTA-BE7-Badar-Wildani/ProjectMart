@@ -2,6 +2,10 @@ package main
 
 import (
 	"go-ecommerce/config"
+	"go-ecommerce/delivery/handlers"
+	"go-ecommerce/delivery/routes"
+	userRepository "go-ecommerce/repositories/user"
+	userService "go-ecommerce/services/user"
 	"go-ecommerce/utilities"
 
 	"github.com/labstack/echo/v4"
@@ -15,5 +19,12 @@ func main() {
 
 
 	e := echo.New()
+
+	userRepository := userRepository.NewUserRepository(db)
+	userService := userService.NewUserService(userRepository)
+	userHandler := handlers.NewUserHandler(userService)
+	
+	routes.RegisterUserRoute(e, userHandler)
+
 	e.Logger.Fatal(e.Start(":" + config.App.Port))
 }
