@@ -180,3 +180,95 @@ func (service CartService) Create(cartReq web.CartRequest, tokenReq interface{})
 
 	return cartRes, nil
 }
+
+
+/*
+ * --------------------------
+ *  Update to cart
+ * --------------------------
+ */
+func (service CartService) Update(cartReq web.CartRequest, id int, tokenReq interface{}) (web.CartResponse, error) {
+	// Translate token
+	token := tokenReq.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userIDReflect := reflect.ValueOf(claims).MapIndex(reflect.ValueOf("userID"))
+	if reflect.ValueOf(userIDReflect.Interface()).Kind().String() != "float64" {
+		return web.CartResponse{}, web.WebError{ Code: 400, Message: "Invalid token, no userdata present" }
+	}
+
+	// get user data
+	user, err := service.userRepo.Find(int(claims["userID"].(float64)))
+	if err != nil {
+		return web.CartResponse{}, web.WebError{ Code: 400, Message: "No user matched with this authenticated user"}
+	}
+
+	// Get last User transaction (cart) 
+	filters := []map[string]string {
+		{
+			"field": "user_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(user.ID)),
+		},
+	}
+	tr, err := service.trRepo.FindFirst(filters)
+	if err != nil {
+		webErr := err.(web.WebError)
+		if webErr.Code != 400 {
+			return web.CartResponse{}, err
+		}
+		return web.CartResponse{}, web.WebError{ Code: 500, Message: "data error: orphan cart items" }
+	}
+
+	// get old transaction item
+	trItemOld, err := service.trItemRepo.Find(id)
+	if err != nil {
+		return web.CartResponse{}, web.WebError{ Code: 400, Message: "cart item not found" }
+	}
+	
+
+	// get product data based on new trItem
+	if cartReq.ProductID == 0 {
+		cartReq.ProductID = trItemOld.ProductID
+	}
+	product, err := service.productRepo.Find(int(cartReq.ProductID))
+	if err != nil {
+		return web.CartResponse{}, err
+	}
+
+	// Convert request to domain entity
+	trItem := trItemOld
+	copier.Copy(&trItem, &cartReq)
+	trItem.ID = trItemOld.ID
+	trItem.TransactionID = tr.ID
+	trItem.ProductID = product.ID
+	trItem.ProductPrice = int64(product.Price)
+	trItem.SubTotal = int64(trItem.Qty) * int64(product.Price)
+
+	// repository transaction item action
+	trItem, err = service.trItemRepo.Update(trItem, id)
+	if err != nil {
+		return web.CartResponse{}, err
+	}
+
+	// get newly transaction item for getting preload data
+	trItem, err = service.trItemRepo.Find(int(trItem.ID))
+	if err != nil {
+		return web.CartResponse{}, err
+	}
+
+	// Update transaction
+	tr.TotalQty = tr.TotalQty - trItemOld.Qty
+	tr.TotalQty = tr.TotalQty + trItem.Qty
+	tr.TotalPrice = tr.TotalPrice - trItemOld.SubTotal
+	tr.TotalPrice = tr.TotalPrice + trItem.SubTotal
+	tr, err = service.trRepo.Update(tr, int(tr.ID))
+	if err != nil {
+		return web.CartResponse{}, err
+	}
+
+	// convert tr item to cart response
+	cartRes := web.CartResponse{}
+	copier.Copy(&cartRes, &trItem)
+
+	return cartRes, nil
+}
