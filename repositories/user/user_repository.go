@@ -57,7 +57,14 @@ func (repo UserRepository) Find(id int) (entityDomain.User, error) {
 }
 
 func (repo UserRepository) FindBy(field string, value string) (entityDomain.User, error) {
-	panic("Implement me")
+	user := entityDomain.User{}
+	tx := repo.db.Where(field + " = ?", value).Find(&user)
+	if tx.Error != nil {
+		return entityDomain.User{}, web.WebError{ Code: 500, Message: tx.Error.Error() }
+	} else if tx.RowsAffected <= 0 {
+		return entityDomain.User{}, web.WebError{ Code: 400, Message: "The requested ID doesn't match with any record" }
+	}
+	return user, nil
 }
 
 func (repo UserRepository) Store(user entityDomain.User) (entityDomain.User, error) {
