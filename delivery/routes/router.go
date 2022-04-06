@@ -36,3 +36,8 @@ func RegisterCategoryRoute(e *echo.Echo, categoryHandler handler.CategoryHandler
 	e.PUT("/api/categories/:id", categoryHandler.Update)
 	e.DELETE("/api/categories/:id", categoryHandler.Delete)
 }
+
+func RegisterCartRoute(e *echo.Echo, cartHandler handler.CartHandler) {
+	e.GET("/api/carts", cartHandler.Index, webMiddleware.JWTMiddleware())
+	e.POST("/api/carts", cartHandler.Create, webMiddleware.JWTMiddleware())
+}
