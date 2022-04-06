@@ -9,6 +9,7 @@ import (
 type AppConfig struct {
 	App struct {
 		Port string
+		BaseUrl string
 	}
 	Database struct {
 		Username string
@@ -35,6 +36,7 @@ func initConfig() *AppConfig {
 	appConfig := AppConfig{}
 
 	appConfig.App.Port = "8000"
+	appConfig.App.BaseUrl = "localhost"
 	appConfig.Database.Username = "root"
 	appConfig.Database.Password = "root"
 	appConfig.Database.Host = "localhost"
@@ -48,6 +50,7 @@ func initConfig() *AppConfig {
 	}
 
 	appConfig.App.Port = os.Getenv("APP_PORT")
+	appConfig.App.BaseUrl = os.Getenv("APP_BASE_URL")
 	appConfig.Database.Username = os.Getenv("DB_USERNAME")
 	appConfig.Database.Password = os.Getenv("DB_PASSWORD")
 	appConfig.Database.Host = os.Getenv("DB_HOST")
