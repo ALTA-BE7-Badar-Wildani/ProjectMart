@@ -13,6 +13,7 @@ import (
 	cartService "go-ecommerce/services/cart"
 	categoryService "go-ecommerce/services/category"
 	productService "go-ecommerce/services/product"
+	trService "go-ecommerce/services/transaction"
 	userService "go-ecommerce/services/user"
 	"go-ecommerce/utilities"
 
@@ -57,6 +58,10 @@ func main() {
 	cartHandler := handlers.NewCartHandler(cartService)
 	routes.RegisterCartRoute(e, cartHandler)
 	
+	// User's transaction
+	transactionService := trService.NewTransactionService(trRepository, userRepository)
+	transactionHandler := handlers.NewTransactionHandler(transactionService)
+	routes.RegisterTransactionRoute(e, transactionHandler)
 
 	e.Logger.Fatal(e.Start(":" + config.App.Port))
 }

@@ -17,4 +17,5 @@ type Transaction struct {
 	TotalQty int
 	TotalPrice int64
 	Status string
+	Items []TransactionItem `gorm:"foreignKey:TransactionID;references:ID"`
 }
