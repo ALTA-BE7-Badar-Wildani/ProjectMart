@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"fmt"
 	"go-ecommerce/entities/web"
 	trRepo "go-ecommerce/repositories/transaction"
 	userRepo "go-ecommerce/repositories/user"
@@ -101,7 +100,6 @@ func (service TransactionService) GetPagination(page, limit int, filters []map[s
 	if err != nil {
 		return web.Pagination{}, err
 	}
-	fmt.Println(totalRows)
 	totalPages :=  totalRows / int64(limit)
 	if totalPages <= 0 {
 		totalPages = 1
