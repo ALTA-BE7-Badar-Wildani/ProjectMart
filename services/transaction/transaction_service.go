@@ -101,7 +101,7 @@ func (service TransactionService) GetPagination(page, limit int, filters []map[s
 		return web.Pagination{}, err
 	}
 	totalPages :=  totalRows / int64(limit)
-	if totalPages % int64(limit) >= 0 {
+	if totalPages % int64(limit) > 0 {
 		totalPages++
 	}
 
