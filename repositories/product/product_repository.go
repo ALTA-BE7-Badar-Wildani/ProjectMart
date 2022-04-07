@@ -35,9 +35,14 @@ func (repo ProductRepository) FindAll(limit int, offset int, filters []map[strin
 	}
 	return products, nil
 }
-func (repo ProductRepository) CountAll() (int64, error) {
+func (repo ProductRepository) CountAll(filters []map[string]string) (int64, error) {
 	var count int64
-	tx := repo.db.Model(&entityDomain.Product{}).Count(&count)
+	builder := repo.db.Model(&entityDomain.Product{})
+	// Where filters
+	for _, filter := range filters {
+		builder.Where(filter["field"] + " " + filter["operator"] + " ?", filter["value"])
+	}
+	tx := builder.Count(&count)
 	if tx.Error != nil {
 		return -1, web.WebError{Code: 400, Message: tx.Error.Error()}
 	}

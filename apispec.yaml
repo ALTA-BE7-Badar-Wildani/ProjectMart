@@ -1,12 +1,17 @@
 openapi: '3.0.3'
 
 info:
-    title: Go E-Commerce
+    title: ProjectMart
     description: an API for simple E-Commerce application
-    version: v1.0.1
+    version: v1.0.2
+
     contact:
         email: badar.wildanie@gmail.com
         name: Badar Wildani
+
+servers:
+    - url: 'http://34.238.121.143:8000'
+      description: Production
 
 tags:
     - name: Auth
@@ -19,6 +24,8 @@ tags:
       description: Manage categories
     - name: Cart
       description: Manage categories
+    - name: Transaction
+      description: Get history transaction
 
 components:
     schemas:
@@ -248,6 +255,9 @@ components:
                 description:
                     type: string
                     example: Some random product's description
+                image:
+                    type: string
+                    example: https://source.unsplash.com/1200x400/?sea
                 category_id:
                     type: integer
                     example: 11
@@ -2391,3 +2401,100 @@ paths:
                                     error:
                                         type: string
                                         example: cannot checkout cart, system error
+    /api/users/{id}/transactions:
+        get:
+            tags:
+                - 'Transaction'
+            description: Get user's history transaction
+            summary: Get user's history transaction *
+            parameters:
+                - in: path
+                  required: true
+                  name: id
+                  description: user id
+                  schema:
+                      type: string
+                      example: 7
+                - in: header
+                  name: Authorization
+                  required: true
+                  schema:
+                      type: string
+                      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            responses:
+                '200':
+                    description: Success getting list of user's transactions
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: OK
+                                    error:
+                                        type: string
+                                        example: null
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/transactions'
+                                            next:
+                                                type: string
+                                                example: 'http://example.com/api/transactions?p=2'
+                                            last:
+                                                type: string
+                                                example: 'http://example.com/api/transactions?p=10'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/transaction-response'
+                                    pagination:
+                                        $ref: '#/components/schemas/pagination'
+                '401':
+                    description: Unauthorized user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 401
+                                    error:
+                                        type: string
+                                        example: 'Unauthorized user'
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://example.com/api/products'
+                '500':
+                    description: server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ERROR'
+                                    code:
+                                        type: string
+                                        example: 500
+                                    error:
+                                        type: string
+                                        example: 'server error, cannot connect to database'
+
+                                    links:
+                                        type: object
+                                        properties:
+                                            self:
+                                                type: string
+                                                example: 'http://domain.com/api/users/7/products'

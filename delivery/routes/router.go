@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"go-ecommerce/delivery/handlers"
 	handler "go-ecommerce/delivery/handlers"
 	webMiddleware "go-ecommerce/delivery/middleware"
 
@@ -43,4 +44,8 @@ func RegisterCartRoute(e *echo.Echo, cartHandler handler.CartHandler) {
 	e.PUT("/api/carts/:id", cartHandler.Update, webMiddleware.JWTMiddleware())
 	e.DELETE("/api/carts/:id", cartHandler.Delete, webMiddleware.JWTMiddleware())
 	e.PUT("/api/carts/checkout", cartHandler.Checkout, webMiddleware.JWTMiddleware())
+}
+
+func RegisterTransactionRoute(e *echo.Echo, transactionHandler handlers.TransactionHandler) {
+	e.GET("/api/users/:id/transactions", transactionHandler.Index, webMiddleware.JWTMiddleware())
 }

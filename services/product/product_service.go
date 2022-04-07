@@ -43,12 +43,15 @@ func (service ProductService) FindAll(limit, page int, filters []map[string]stri
  * Load pagination data 
  * --------------------------
  */
-func (service ProductService) GetPagination(page, limit int) (web.Pagination, error) {
-	totalRows, err := service.productRepo.CountAll()
+func (service ProductService) GetPagination(page, limit int, filters []map[string]string) (web.Pagination, error) {
+	totalRows, err := service.productRepo.CountAll(filters)
 	if err != nil {
 		return web.Pagination{}, err
 	}
 	totalPages :=  totalRows / int64(limit)
+	if totalPages % int64(limit) >= 0 {
+		totalPages++
+	}
 
 	return web.Pagination{
 		Page: page,

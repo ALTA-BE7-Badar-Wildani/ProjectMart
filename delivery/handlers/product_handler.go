@@ -56,7 +56,7 @@ func (handler ProductHandler) Index(c echo.Context) error {
 			})
 		}
 	}
-	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/products"}
+	links := map[string]string {"self": config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=" + c.QueryParam("page")}
 
 	// pagination param
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
@@ -68,6 +68,7 @@ func (handler ProductHandler) Index(c echo.Context) error {
 		links := map[string]string {"self": config.Get().App.BaseUrl}
 		return c.JSON(400, helpers.MakeErrorResponse("ERROR", 400, "page Parameter format is invalid", links))
 	}
+	links["self"] = config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=" + c.QueryParam("page")
 
 	// Get all products
 	productsRes, err := handler.productService.FindAll(limit, page, filters, sorts)
@@ -80,13 +81,22 @@ func (handler ProductHandler) Index(c echo.Context) error {
 	}
 	
 	// Get pagination data
-	pagination, err := handler.productService.GetPagination(limit, page)
+	pagination, err := handler.productService.GetPagination(limit, page, filters)
 	if err != nil {
 		if reflect.TypeOf(err).String() == "web.WebError" {
 			webErr := err.(web.WebError)
 			return c.JSON(webErr.Code, helpers.MakeErrorResponse("ERROR", webErr.Code, webErr.Error(), links))
 		}
 		panic("not returning custom error")
+	}
+
+	links["first"] = config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=1"
+	links["last"] = config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=" + strconv.Itoa(pagination.TotalPages)
+	if pagination.Page > 1 {
+		links["prev"] = config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=" + strconv.Itoa(pagination.Page - 1)
+	}
+	if pagination.Page < pagination.TotalPages {
+		links["next"] = config.Get().App.BaseUrl + "/api/products?limit=" + c.QueryParam("limit") + "&page=" + strconv.Itoa(pagination.Page + 1)
 	}
 	
 	// success response
@@ -200,7 +210,7 @@ func (handler ProductHandler) GetUserProduct(c echo.Context) error {
 	}
 	
 	// Get pagination data
-	pagination, err := handler.productService.GetPagination(limit, page)
+	pagination, err := handler.productService.GetPagination(limit, page, filters)
 	if err != nil {
 		if reflect.TypeOf(err).String() == "web.WebError" {
 			webErr := err.(web.WebError)
