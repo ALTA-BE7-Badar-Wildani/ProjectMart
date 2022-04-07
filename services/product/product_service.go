@@ -49,7 +49,7 @@ func (service ProductService) GetPagination(limit, page int, filters []map[strin
 		return web.Pagination{}, err
 	}
 	totalPages :=  totalRows / int64(limit)
-	if totalPages % int64(limit) > 0 {
+	if totalRows % int64(limit) > 0 {
 		totalPages++
 	}
 
