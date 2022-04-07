@@ -19,6 +19,6 @@ jobs:
                   port: ${{ secrets.PORT }}
                   script: |
                       cd /home/ubuntu/project-mart
-                      git pull origin deployment -f
+                      git pull origin deployment
                       docker-compose down
                       docker-compose up --build -d
