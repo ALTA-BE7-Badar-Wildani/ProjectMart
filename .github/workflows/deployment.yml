@@ -21,4 +21,4 @@ jobs:
                       cd /home/ubuntu/project-mart
                       git pull origin main -f
                       docker-compose down
-                      docker-compose up --build
+                      docker-compose up --build -d
