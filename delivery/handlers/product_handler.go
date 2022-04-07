@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"go-ecommerce/config"
 	"go-ecommerce/delivery/helpers"
 	"go-ecommerce/entities/web"
@@ -38,7 +39,16 @@ func (handler ProductHandler) Index(c echo.Context) error {
 			"operator": "LIKE",
 			"value": "%" + q + "%",
 		})
-	} 
+	}
+	category_id := c.QueryParam("category_id") 
+	if category_id != "" {
+		filters = append(filters, map[string]string{
+			"field": "category_id",
+			"operator": "=",
+			"value": category_id,
+		})
+	}
+	fmt.Println(category_id)
 	// Sort parameter
 	sorts := []map[string]interface{} {}
 	sortPrice := c.QueryParam("sortPrice") 
