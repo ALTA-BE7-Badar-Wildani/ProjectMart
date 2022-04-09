@@ -3,7 +3,7 @@ openapi: '3.0.3'
 info:
     title: ProjectMart
     description: an API for simple E-Commerce application
-    version: v1.0.2
+    version: v1.1
 
     contact:
         email: badar.wildanie@gmail.com
@@ -28,6 +28,12 @@ tags:
       description: Get history transaction
 
 components:
+    securitySchemes:
+        JWTAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: 'Use token for authorization'
     schemas:
         auth-request:
             type: object
@@ -74,9 +80,6 @@ components:
                 username:
                     type: string
                     example: john
-                password:
-                    type: string
-                    example: john123
                 gender:
                     type: string
                     example: male
@@ -506,6 +509,18 @@ paths:
                   schema:
                       type: string
                       example: a address to filter
+                - in: query
+                  name: limit
+                  description: Limit rows per page
+                  schema:
+                      type: string
+                      example: 50
+                - in: query
+                  name: page
+                  description: Page number
+                  schema:
+                      type: string
+                      example: 1
             responses:
                 '200':
                     description: Success getting list of user
@@ -652,7 +667,7 @@ paths:
                                                 type: string
                                                 example: 'http://domain.com/api/users'
 
-    /api/users/{id}:
+    /api/users/{userId}:
         get:
             tags:
                 - 'User'
@@ -963,11 +978,30 @@ paths:
                       type: string
                       example: some product title to search
                 - in: query
+                  name: category_id
+                  allowEmptyValue: true
+                  description: filter product by category
+                  schema:
+                      type: string
+                      example: 7
+                - in: query
                   name: sortPrice
                   description: sort product based on product's price
                   schema:
                       type: integer
                       example: 0
+                - in: query
+                  name: limit
+                  description: Limit rows per page
+                  schema:
+                      type: string
+                      example: 50
+                - in: query
+                  name: page
+                  description: Page number
+                  schema:
+                      type: string
+                      example: 1
             responses:
                 '200':
                     description: Success getting list of product
@@ -1023,7 +1057,7 @@ paths:
                                             self:
                                                 type: string
                                                 example: 'http://domain.com/api/auth'
-    /api/products/{id}:
+    /api/products/{productId}:
         get:
             tags:
                 - 'Product'
@@ -1104,7 +1138,7 @@ paths:
                                                 type: string
                                                 example: 'http://example.com/api/products/2'
 
-    /api/users/{id}/products:
+    /api/users/{userId}/products:
         get:
             tags:
                 - 'Product'
@@ -1123,6 +1157,18 @@ paths:
                   schema:
                       type: string
                       example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                - in: query
+                  name: limit
+                  description: Limit rows per page
+                  schema:
+                      type: string
+                      example: 50
+                - in: query
+                  name: page
+                  description: Page number
+                  schema:
+                      type: string
+                      example: 1
             responses:
                 '200':
                     description: Success getting list of user's product
@@ -1319,7 +1365,7 @@ paths:
                                                 type: string
                                                 example: 'http://example.com/api/products/2'
 
-    /api/users/{id}/products/{productId}:
+    /api/users/{userId}/products/{productId}:
         put:
             tags:
                 - 'Product'
@@ -1539,6 +1585,19 @@ paths:
             tags:
                 - 'Category'
             description: Getting list of category
+            parameters:
+                - in: query
+                  name: limit
+                  description: Limit rows per page
+                  schema:
+                      type: string
+                      example: 50
+                - in: query
+                  name: page
+                  description: Page number
+                  schema:
+                      type: string
+                      example: 1
             summary: getting list of category
             responses:
                 '200':
@@ -1708,7 +1767,7 @@ paths:
                                             self:
                                                 type: string
                                                 example: 'http://domain.com/api/categories'
-    /api/categories/{id}:
+    /api/categories/{categoryId}:
         get:
             tags:
                 - 'Category'
@@ -2195,7 +2254,7 @@ paths:
                                             self:
                                                 type: string
                                                 example: 'http://domain.com/api/categories'
-    /api/cart/{id}:
+    /api/cart/{cartId}:
         put:
             tags:
                 - 'Cart'
@@ -2401,11 +2460,13 @@ paths:
                                     error:
                                         type: string
                                         example: cannot checkout cart, system error
-    /api/users/{id}/transactions:
+    /api/users/{userId}/transactions:
         get:
             tags:
                 - 'Transaction'
             description: Get user's history transaction
+            security:
+                - JWTAuth: []
             summary: Get user's history transaction *
             parameters:
                 - in: path
@@ -2421,6 +2482,18 @@ paths:
                   schema:
                       type: string
                       example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                - in: query
+                  name: limit
+                  description: Limit rows per page
+                  schema:
+                      type: string
+                      example: 50
+                - in: query
+                  name: page
+                  description: Page number
+                  schema:
+                      type: string
+                      example: 1
             responses:
                 '200':
                     description: Success getting list of user's transactions
