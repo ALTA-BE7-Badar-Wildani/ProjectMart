@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"fmt"
 	"go-ecommerce/entities/domain"
 	"go-ecommerce/entities/web"
 	productRepository "go-ecommerce/repositories/product"
@@ -196,16 +197,57 @@ func (service CartService) Create(cartReq web.CartRequest, tokenReq interface{})
 
 	// Convert request to domain entity
 	trItem := domain.TransactionItem{}
-	copier.Copy(&trItem, &cartReq)
-	trItem.TransactionID = tr.ID
-	trItem.ProductID = product.ID
-	trItem.ProductPrice = int64(product.Price)
-	trItem.SubTotal = int64(trItem.Qty) * int64(product.Price)
-
-	// repository transaction item action
-	trItem, err = service.trItemRepo.Store(trItem)
+	
+	// get transaction item if exist
+	filters = []map[string]string {
+		{
+			"field": "transaction_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(tr.ID)),
+		},
+		{
+			"field": "product_id",
+			"operator": "=",
+			"value": strconv.Itoa(int(cartReq.ProductID)),
+		},
+	}
+	trItemOld, err := service.trItemRepo.FindFirst(filters)
 	if err != nil {
-		return web.CartResponse{}, err
+		if reflect.TypeOf(err).String() == "web.WebError" {
+			webErr := err.(web.WebError)
+			fmt.Println(webErr)
+			if webErr.Code == 400 {
+				// Store new transaction item if no same product within tr
+				copier.Copy(&trItem, &cartReq)
+				trItem.TransactionID = tr.ID
+				trItem.ProductID = product.ID
+				trItem.ProductPrice = int64(product.Price)
+				trItem.SubTotal = int64(trItem.Qty) * int64(product.Price)
+
+				trItem, err = service.trItemRepo.Store(trItem)
+				if err != nil {
+					return web.CartResponse{}, err
+				}
+
+				// set Tr
+				tr.TotalQty = tr.TotalQty + trItem.Qty
+				tr.TotalPrice = tr.TotalPrice + trItem.SubTotal
+			}
+		}
+	} else {
+
+		// Update current transaction item if it already exists
+		copier.Copy(&trItem, &trItemOld)
+		trItem.Qty += cartReq.Qty
+		trItem.SubTotal = int64(trItem.Qty) * int64(product.Price)
+		trItem, err = service.trItemRepo.Update(trItem, int(trItem.ID))
+		if err != nil {
+			return web.CartResponse{}, err
+		}
+
+		// Set Tr
+		tr.TotalQty += cartReq.Qty
+		tr.TotalPrice += int64(cartReq.Qty) * int64(product.Price)
 	}
 
 	// get newly transaction item for getting preload data
@@ -215,8 +257,6 @@ func (service CartService) Create(cartReq web.CartRequest, tokenReq interface{})
 	}
 
 	// Update transaction
-	tr.TotalQty = tr.TotalQty + trItem.Qty
-	tr.TotalPrice = tr.TotalPrice + trItem.SubTotal
 	tr, err = service.trRepo.Update(tr, int(tr.ID))
 	if err != nil {
 		return web.CartResponse{}, err

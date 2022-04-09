@@ -4,6 +4,7 @@ import (
 	"go-ecommerce/entities/domain"
 	web "go-ecommerce/entities/web"
 	userRepository "go-ecommerce/repositories/user"
+	"go-ecommerce/utilities"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
@@ -52,23 +53,33 @@ func (service UserService) Find(id int) (web.UserResponse, error) {
 }
 
 
-func (service UserService) Create(userRequest web.UserRequest) (web.UserResponse, error) {
+func (service UserService) Create(userRequest web.UserRequest) (web.AuthResponse, error) {
 	
 	user := domain.User{}
 	copier.Copy(&user, &userRequest)
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return web.UserResponse{}, web.WebError{ Code: 500, Message: "server error: hashing failed" }
+		return web.AuthResponse{}, web.WebError{ Code: 500, Message: "server error: hashing failed" }
 	}
 	user.Password = string(hashedPassword)
 
 	user, err = service.userRepo.Store(user)
+	if err != nil {
+		return web.AuthResponse{}, err
+	}
 
 	userRes := web.UserResponse{}
 	copier.Copy(&userRes, &user)
-
-	return userRes, err
+	token, err := utilities.CreateToken(user)
+	if err != nil {
+		return web.AuthResponse{}, err
+	}
+	authRes := web.AuthResponse{
+		Token: token,
+		User: userRes,
+	}
+	return authRes, nil
 }
 
 
